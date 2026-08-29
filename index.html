@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Constraint Dash: corre hacia la restricción correcta. Microjuego para traducir enunciados verbales a desigualdades (≤, ≥, =) en el planteamiento de modelos de programación lineal." />
+  <meta name="theme-color" content="#070b1e" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070b1e'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%232de2ff' font-family='monospace'%3E%E2%89%A4%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <title>Constraint Dash · Corre hacia la restricción correcta</title>
+</head>
+<body>
+  <main id="app">
+
+    <!-- ============ PORTADA ============ -->
+    <section class="screen active" id="screen-home" aria-label="Portada">
+      <div class="home-bg" aria-hidden="true"></div>
+      <div class="home-inner">
+        <p class="kicker">Gimnasio 2 · Optimización I</p>
+        <h1 class="logo">
+          <span class="logo-line1">CONSTRAINT</span>
+          <span class="logo-line2">DASH</span>
+        </h1>
+        <p class="tagline">Corre hacia la restricción correcta</p>
+
+        <ul class="rules">
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Lee el enunciado de la restricción.
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            Toca la puerta correcta: <b>≤</b>, <b>≥</b> o <b>=</b>.
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9v4l3 2M9 2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            8 decisiones · ~1 minuto · sin castigos.
+          </li>
+        </ul>
+
+        <button class="btn-primary" id="btn-play" type="button">JUGAR</button>
+
+        <p class="home-foot">
+          Palabras clave: máximo · cuando mucho · al menos · cuando menos ·
+          exactamente · no negatividad
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ JUEGO ============ -->
+    <section class="screen" id="screen-game" aria-label="Juego">
+      <header class="hud">
+        <div class="score-box">
+          <span class="lbl">PUNTOS</span>
+          <strong id="hud-score">0</strong>
+        </div>
+        <div class="dots" id="hud-dots" aria-hidden="true"></div>
+        <button class="icon-btn" id="btn-sound" type="button" aria-pressed="true" aria-label="Silenciar sonido">
+          <svg class="ic-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 9c1.2 1 1.2 5 0 6M18.5 6.5c2.5 2.5 2.5 8.5 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg class="ic-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+
+      <section class="statement" aria-live="assertive" aria-atomic="true">
+        <p class="stmt-text" id="stmt-text"></p>
+        <p class="stmt-vars" id="stmt-vars"></p>
+      </section>
+
+      <div class="track" id="track">
+        <div class="timer" aria-hidden="true"><div class="timer-fill" id="timer-fill"></div></div>
+        <div class="ground" aria-hidden="true"></div>
+        <div class="horizon" aria-hidden="true"></div>
+        <div class="lane-seps" aria-hidden="true"><i></i><i></i></div>
+
+        <div class="gates" id="gates" aria-hidden="true">
+          <div class="gate" data-gate="0"><span class="sym"></span><span class="formula"></span></div>
+          <div class="gate" data-gate="1"><span class="sym"></span><span class="formula"></span></div>
+          <div class="gate" data-gate="2"><span class="sym"></span><span class="formula"></span></div>
+        </div>
+
+        <div class="char" id="char" aria-hidden="true">
+          <svg class="bot" viewBox="0 0 72 76">
+            <defs>
+              <linearGradient id="bodyg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#2de2ff"/>
+                <stop offset="1" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+            <g class="leg leg-a"><rect x="28" y="54" width="7" height="16" rx="3.5" fill="#1c2b57"/></g>
+            <g class="leg leg-b"><rect x="41" y="54" width="7" height="16" rx="3.5" fill="#1c2b57"/></g>
+            <rect class="torso" x="19" y="12" width="38" height="44" rx="15" fill="url(#bodyg)"/>
+            <rect class="visor" x="26" y="23" width="24" height="11" rx="5.5" fill="#071022"/>
+            <rect class="eye" x="41" y="26.5" width="7" height="4" rx="2" fill="#58ffa6"/>
+            <rect class="pack" x="12" y="26" width="9" height="17" rx="4.5" fill="#ffc24b"/>
+          </svg>
+        </div>
+
+        <div class="zones" id="zones">
+          <button class="zone" data-lane="0" type="button" aria-label="Puerta uno: menor o igual que"></button>
+          <button class="zone" data-lane="1" type="button" aria-label="Puerta dos: mayor o igual que"></button>
+          <button class="zone" data-lane="2" type="button" aria-label="Puerta tres: igual que"></button>
+        </div>
+
+        <div class="floaters" id="floaters" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- ============ RESULTADO ============ -->
+    <section class="screen" id="screen-result" aria-label="Resultado final">
+      <div class="home-bg" aria-hidden="true"></div>
+      <div class="home-inner result-inner">
+        <p class="kicker">Carrera terminada</p>
+        <p class="rank" id="result-rank">RANGO A</p>
+        <p class="final-score"><span id="result-score">0</span><span class="fs-lbl"> pts</span></p>
+
+        <dl class="stats">
+          <div><dt>Aciertos</dt><dd id="stat-hits">0/8</dd></div>
+          <div><dt>Racha máx.</dt><dd id="stat-streak">0</dd></div>
+          <div><dt>Tiempo</dt><dd id="stat-time">0s</dd></div>
+        </dl>
+
+        <p class="tip" id="result-tip"></p>
+
+        <button class="btn-primary" id="btn-again" type="button">CORRER OTRA VEZ</button>
+        <button class="btn-ghost" id="btn-home" type="button">Volver al inicio</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/audio.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

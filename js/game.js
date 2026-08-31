@@ -1,4 +1,4 @@
-/* Motor del runner: una carrera, ocho decisiones y tres puertas. */
+/* Motor del runner: una carrera, diez decisiones y tres puertas. */
 (function () {
   "use strict";
 

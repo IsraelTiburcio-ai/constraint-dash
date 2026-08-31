@@ -20,14 +20,14 @@ La actividad está basada principalmente en **Gimnasio 2. Modelos de Programaci�
 1. El personaje corre automáticamente por una pista digital.
 2. En cada ronda aparece un enunciado breve.
 3. El jugador toca una de tres puertas grandes: `≤`, `≥` o `=`.
-4. Hay **8 decisiones por partida**.
+4. Hay **10 decisiones por partida**.
 5. Un error muestra la respuesta correcta y la carrera continúa; no se reinicia la partida.
 
 Las preguntas simbólicas muestran relaciones como `x2 ≤ x1`, `x2 ≥ 2x1` o `xA ≥ xB/2` para conectar la palabra clave con la formulación.
 
 ## Duración
 
-La ventana máxima de decisión es de 7 segundos por ronda. Una partida completa dura normalmente **45-65 segundos** y nunca necesita superar los 2 minutos.
+La ventana máxima de decisión es de 7 segundos por ronda. Una partida completa dura normalmente **45-80 segundos** y nunca necesita superar los 2 minutos.
 
 ## Traducciones practicadas
 

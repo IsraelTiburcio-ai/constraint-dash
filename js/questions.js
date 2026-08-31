@@ -280,15 +280,11 @@
     return copy;
   }
 
-  function firstByAnswer(list, answer) {
-    return shuffle(list.filter(function (question) { return question.answer === answer; }))[0];
-  }
-
   function buildRun() {
     var keywords = questions.filter(function (question) { return question.kind === "keyword"; });
     var lte = shuffle(keywords.filter(function (question) { return question.answer === "lte"; }));
     var gte = shuffle(keywords.filter(function (question) { return question.answer === "gte"; }));
-    var selectedKeywords = [lte[0], gte[0], lte[1], gte[1]];
+    var selectedKeywords = [lte[0], gte[0], lte[1], gte[1], lte[2]];
     var equal = shuffle(questions.filter(function (question) { return question.kind === "equal"; }))[0];
     var nonnegative = shuffle(questions.filter(function (question) { return question.kind === "nonnegative"; }))[0];
     var symbolic = shuffle(questions.filter(function (question) { return question.kind === "symbolic"; }));
@@ -298,11 +294,13 @@
       selectedKeywords[1],
       selectedKeywords[2],
       selectedKeywords[3],
+      selectedKeywords[4],
       equal,
       nonnegative,
-      symbolic[0]
+      symbolic[0],
+      symbolic[1]
     ]);
-    return [first].concat(middle, symbolic[1]);
+    return [first].concat(middle, symbolic[2]);
   }
 
   window.ConstraintQuestions = {

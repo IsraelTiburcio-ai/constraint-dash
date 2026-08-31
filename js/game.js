@@ -27,6 +27,7 @@
   var zones = Array.prototype.slice.call(document.querySelectorAll(".zone"));
   var character = document.getElementById("char");
   var floaters = document.getElementById("floaters");
+  var resultReview = document.getElementById("result-review");
 
   var gameRun = null;
   var round = null;
@@ -46,6 +47,15 @@
 
   function relationIndex(answer) {
     return RELATIONS.indexOf(answer);
+  }
+
+  function answerLabel(question, index) {
+    if (index < 0) return "Sin respuesta";
+    return question.options ? question.options[index] : SYMBOLS[index];
+  }
+
+  function correctAnswerLabel(question, index) {
+    return question.options ? question.options[index] : question.reveal;
   }
 
   function renderDots(total) {
@@ -210,6 +220,12 @@
     var correctGate = gates[round.answerIndex];
     var selectedZone = choiceIndex >= 0 ? zones[choiceIndex] : null;
 
+    gameRun.answers[gameRun.index] = {
+      correct: correct,
+      selected: answerLabel(question, choiceIndex),
+      expected: correctAnswerLabel(question, round.answerIndex)
+    };
+
     if (selectedZone) selectedZone.classList.add("picked");
     gates.forEach(function (gate, index) {
       if (index === round.answerIndex) gate.classList.add("good");
@@ -270,6 +286,7 @@
       maxStreak: 0,
       results: [],
       misses: [],
+      answers: [],
       startedAt: performance.now()
     };
     round = null;
@@ -313,10 +330,49 @@
     document.getElementById("stat-streak").textContent = String(gameRun.maxStreak);
     document.getElementById("stat-time").textContent = elapsed + "s";
 
+    renderReview();
+
     var tip = document.getElementById("result-tip");
     tip.textContent = gameRun.misses.length ? gameRun.misses[0].tip : "Lectura perfecta: cada palabra clave encontró su desigualdad.";
     AudioKit.finish();
     showScreen("result");
+  }
+
+  function renderReview() {
+    resultReview.replaceChildren();
+    gameRun.rounds.forEach(function (question, index) {
+      var answer = gameRun.answers[index];
+      var item = document.createElement("li");
+      var top = document.createElement("div");
+      var number = document.createElement("span");
+      var status = document.createElement("span");
+      var prompt = document.createElement("p");
+      var yourAnswer = document.createElement("p");
+      var expected = document.createElement("p");
+
+      item.className = "review-item " + (answer && answer.correct ? "ok" : "bad");
+      item.title = question.text;
+      top.className = "review-top";
+      number.className = "review-number";
+      status.className = "review-status";
+      prompt.className = "review-prompt";
+      yourAnswer.className = "review-answer";
+      expected.className = "review-answer review-expected";
+
+      number.textContent = String(index + 1).padStart(2, "0");
+      status.textContent = answer && answer.correct ? "BIEN" : "REVISAR";
+      prompt.textContent = question.text;
+      yourAnswer.textContent = "Tu: " + (answer ? answer.selected : "Sin respuesta");
+      expected.textContent = "Correcta: " + (answer ? answer.expected : question.reveal);
+
+      top.appendChild(number);
+      top.appendChild(status);
+      item.appendChild(top);
+      item.appendChild(prompt);
+      item.appendChild(yourAnswer);
+      item.appendChild(expected);
+      resultReview.appendChild(item);
+    });
   }
 
   function goHome() {

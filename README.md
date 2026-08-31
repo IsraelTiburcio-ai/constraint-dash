@@ -22,7 +22,7 @@ La actividad está basada principalmente en **Gimnasio 2. Modelos de Programaci�
 3. El jugador toca una de tres puertas grandes: `≤`, `≥` o `=`.
 4. Hay **10 decisiones por partida**.
 5. Un error muestra la respuesta correcta y la carrera continúa; no se reinicia la partida.
-6. Al final se revisan las 10 respuestas: aciertos, errores, elección realizada y formulación correcta.
+6. Al final, un botón permite revisar las 10 respuestas: aciertos, errores, elección realizada y formulación correcta.
 
 Las preguntas simbólicas muestran relaciones como `x2 ≤ x1`, `x2 ≥ 2x1` o `xA ≥ xB/2` para conectar la palabra clave con la formulación.
 

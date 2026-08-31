@@ -28,6 +28,8 @@
   var character = document.getElementById("char");
   var floaters = document.getElementById("floaters");
   var resultReview = document.getElementById("result-review");
+  var reviewPanel = document.getElementById("review-panel");
+  var btnReview = document.getElementById("btn-review");
 
   var gameRun = null;
   var round = null;
@@ -56,6 +58,13 @@
 
   function correctAnswerLabel(question, index) {
     return question.options ? question.options[index] : question.reveal;
+  }
+
+  function setReviewOpen(open) {
+    reviewPanel.hidden = !open;
+    btnReview.setAttribute("aria-expanded", String(open));
+    btnReview.textContent = open ? "OCULTAR RESPUESTAS" : "VER RESPUESTAS";
+    if (open) reviewPanel.scrollIntoView({ block: "nearest" });
   }
 
   function renderDots(total) {
@@ -292,6 +301,7 @@
     round = null;
     currentLane = 1;
     renderDots(gameRun.rounds.length);
+    setReviewOpen(false);
     showScreen("game");
     startRound();
   }
@@ -331,6 +341,7 @@
     document.getElementById("stat-time").textContent = elapsed + "s";
 
     renderReview();
+    setReviewOpen(false);
 
     var tip = document.getElementById("result-tip");
     tip.textContent = gameRun.misses.length ? gameRun.misses[0].tip : "Lectura perfecta: cada palabra clave encontró su desigualdad.";
@@ -404,6 +415,9 @@
   btnPlay.addEventListener("click", startRun);
   btnAgain.addEventListener("click", startRun);
   btnHome.addEventListener("click", goHome);
+  btnReview.addEventListener("click", function () {
+    setReviewOpen(reviewPanel.hidden);
+  });
   btnSound.addEventListener("click", function () {
     AudioKit.toggleMute();
     updateSoundButton();

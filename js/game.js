@@ -32,6 +32,7 @@
   var btnReview = document.getElementById("btn-review");
 
   var gameRun = null;
+  var resultsBridge = window.OptiLabResults ? window.OptiLabResults.create('constraint-dash') : { start: function () {}, complete: function () {}, cancel: function () {} };
   var round = null;
   var nextTimer = null;
   var stepTimer = null;
@@ -231,6 +232,7 @@
 
     gameRun.answers[gameRun.index] = {
       correct: correct,
+      timedOut: choiceIndex < 0,
       selected: answerLabel(question, choiceIndex),
       expected: correctAnswerLabel(question, round.answerIndex)
     };
@@ -282,6 +284,7 @@
   }
 
   function startRun() {
+    resultsBridge.start();
     if (nextTimer !== null) window.clearTimeout(nextTimer);
     if (round && round.raf) window.cancelAnimationFrame(round.raf);
     stopStepLoop();
@@ -347,6 +350,9 @@
     tip.textContent = gameRun.misses.length ? gameRun.misses[0].tip : "Lectura perfecta: cada palabra clave encontró su desigualdad.";
     AudioKit.finish();
     showScreen("result");
+    var timeouts = gameRun.answers.filter(function (answer) { return answer.timedOut; }).length;
+    var errors = gameRun.answers.filter(function (answer) { return !answer.correct && !answer.timedOut; }).length;
+    resultsBridge.complete({ reason: 'completed', correct: gameRun.hits, total: total, attempts: gameRun.hits + errors, errors: errors, timeouts: timeouts, durationMs: elapsed * 1000, score: gameRun.score });
   }
 
   function renderReview() {
@@ -387,6 +393,7 @@
   }
 
   function goHome() {
+    resultsBridge.cancel();
     if (nextTimer !== null) window.clearTimeout(nextTimer);
     nextTimer = null;
     if (round && round.raf) window.cancelAnimationFrame(round.raf);
